@@ -12,6 +12,10 @@ void ArduinoOpticalReceiver::begin(unsigned long baudRate)
 	seqNumError = false; // reset sequence number error indicator
 	CRCerror = false; // reset CRC error indicator
 	_state = waitStart; // first state
+	
+	numOfReceivedPackets = 0; // reset received packets counter
+	numOfCurruptedPackets = 0; // reset currupted packets counter
+	errorRate = 0.0f; // reset error rate
 }
 
 char ArduinoOpticalReceiver::updateChecksum(const char byte, char crc)
@@ -81,6 +85,14 @@ bool ArduinoOpticalReceiver::receivePacket(char* bytes, const unsigned long leng
 				sequenceNumberExpected = sequenceNumberReceived; // update packet sequence number
 				if(sequenceNumberExpected == 127) sequenceNumberExpected = 0;
 				else sequenceNumberExpected++;
+				numOfReceivedPackets ++; // increase received packets counter
+				numOfCurruptedPackets ++; // increase currupted packets counter
+				if (numOfReceivedPackets > 0) errorRate = (float)numOfCurruptedPackets * 100.0f / (float)numOfReceivedPackets; // calculate packet error rate
+				if (numOfReceivedPackets == 1000) // after 1000 received packets reset both packet counters
+				{
+				  numOfReceivedPackets = 0;
+				  numOfCurruptedPackets = 0;
+				}
 				return true; // entire packet received
 		}
 	}

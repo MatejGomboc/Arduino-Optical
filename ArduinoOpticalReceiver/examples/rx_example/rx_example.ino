@@ -55,4 +55,6 @@ void loop()
   swSerial.print("f: "); swSerial.println(packet.f); // debug output
   swSerial.print("d: "); swSerial.println(packet.d); // debug output
   swSerial.println(); // debug output
+
+  swSerial.print("err rate: "); swSerial.print(arduinoOpticalReceiver.errorRate); swSerial.println("%"); // debug output
 }

@@ -23,6 +23,9 @@ class ArduinoOpticalReceiver
 		char sequenceNumberReceived; // current received sequence number
 		bool seqNumError; // if invalid sequence number
 		bool CRCerror; // if CRC error
+		long numOfReceivedPackets; // received packets counter
+		long numOfCurruptedPackets; // currupted packets counter
+		float errorRate; // error rate
 	private:
 		char _receivedCRC; // received packet CRC
 		char _calculatedCRC; // calculated  packet CRC

@@ -18,3 +18,6 @@ sequenceNumberExpected	KEYWORD2
 sequenceNumberReceived	KEYWORD2
 seqNumError	KEYWORD2
 CRCerror	KEYWORD2
+numOfReceivedPackets	KEYWORD2
+numOfCurruptedPackets	KEYWORD2
+errorRate	KEYWORD2
