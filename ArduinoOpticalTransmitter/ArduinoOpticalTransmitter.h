@@ -1,6 +1,6 @@
 /*
   ArduinoOptical.h - Library for sending data packets via optical serial link.
-  Created by Matej Gomboc, September 5, 2015.
+  Created by Matej Gomboc, September 8, 2015.
   Released into the public domain.
 */
 

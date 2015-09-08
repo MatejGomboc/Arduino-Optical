@@ -47,15 +47,17 @@ bool ArduinoOpticalReceiver::receivePacket(char* bytes, const unsigned long leng
 		switch(_state)
 		{
 			case waitStart: // wait for start of frame
-				// if start of frame received go to next State
+				// if start of frame received go to next state
 				if (receivedByte == 's') _state = waitSeq;
+				_calculatedCRC = 0; // reset CRC
 				seqNumError = false; // reset sequence number error indicator
 	            CRCerror = false; // reset CRC error indicator
 				return false;
 			case waitSeq: // receive sequence number
 				sequenceNumberReceived = receivedByte;
-				_calculatedCRC = 0;
+				_calculatedCRC = 0;  // reset CRC
 				_calculatedCRC = updateChecksum(receivedByte, _calculatedCRC);
+				// if sequence number received go to next state
 				_state = receiveData;
 				_byteCount = 0;
 				if (sequenceNumberReceived != sequenceNumberExpected) seqNumError = true; // if invalid sequence number
@@ -65,18 +67,21 @@ bool ArduinoOpticalReceiver::receivePacket(char* bytes, const unsigned long leng
 				bytes[_byteCount] = receivedByte;
 				_calculatedCRC = updateChecksum(receivedByte, _calculatedCRC);
 				_byteCount++; // increment payload byte counter
+				// if all payload received go to next state
 				if (_byteCount == length) _state = waitCRC;
+				CRCerror = false; // reset CRC error indicator
 				return false;
 			case waitCRC: // receive CRC
 				_receivedCRC = receivedByte;
 				_calculatedCRC = updateChecksum(receivedByte, _calculatedCRC);
+				// if CRC received go to frst state
 				_state = waitStart;
-				if(_receivedCRC != _calculatedCRC) CRCerror = true;
+				if(_receivedCRC != _calculatedCRC) CRCerror = true; // if CRC error
 				else CRCerror = false;
-				sequenceNumberExpected = sequenceNumberReceived;
+				sequenceNumberExpected = sequenceNumberReceived; // update packet sequence number
 				if(sequenceNumberExpected == 127) sequenceNumberExpected = 0;
 				else sequenceNumberExpected++;
-				return true;
+				return true; // entire packet received
 		}
 	}
 	else return false;

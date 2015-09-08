@@ -30,18 +30,20 @@ void loop()
   
   char receiveBuffer[sizeof(packet_t)] = {0}; // create empty receive buffer
   
-  while(false == arduinoOpticalReceiver.receivePacket(&receiveBuffer[0], sizeof(packet_t)); // receive one packet
+  while(false == arduinoOpticalReceiver.receivePacket(&receiveBuffer[0], sizeof(packet_t))); // receive one packet
 
   if (arduinoOpticalReceiver.seqNumError)
   {
     swSerial.println("Invalid packet sequence number.");
     swSerial.println(arduinoOpticalReceiver.sequenceNumberReceived);
     swSerial.println(arduinoOpticalReceiver.sequenceNumberExpected);
+    swSerial.println();
   }
 
   if (arduinoOpticalReceiver.CRCerror)
   {
     swSerial.println("Invalid packet CRC. Packet currupted.");
+    swSerial.println();
   }
   
   memcpy(&packet, &receiveBuffer[0], sizeof(packet_t)); // deserialize received bytes, reconstruct packet

@@ -14,3 +14,7 @@ State KEYWORD1
 #######################################
 begin	KEYWORD2
 receivePacket	KEYWORD2
+sequenceNumberExpected	KEYWORD2
+sequenceNumberReceived	KEYWORD2
+seqNumError	KEYWORD2
+CRCerror	KEYWORD2
