@@ -27,7 +27,7 @@ void setup()
 
 void loop()
 {
-  delay(1000);
+  delay(100);
   digitalWrite(13, LOW); // turn LED off
   
   packet.c ++; // prepare new packet to be sent
@@ -36,10 +36,10 @@ void loop()
   packet.f += 1.0f;
   packet.d += 1.0;
 
-  uint8_t transmittBuffer[sizeof(packet_t)] = {0}; // create empty transmitt buffer
+  char transmittBuffer[sizeof(packet_t)] = {0}; // create empty transmitt buffer
   memcpy(&transmittBuffer[0], &packet, sizeof(packet_t)); // serialize packet
-  arduinoOpticalTransmitter.sendPacket(&transmittBuffer[0], sizeof(packet_t), 100); // send packet, inter-byte delay 100ms
+  arduinoOpticalTransmitter.sendPacket(&transmittBuffer[0], sizeof(packet_t), 10); // send packet, inter-byte delay 10ms
   
-  delay(1000); // inter-packet delay 2s
+  delay(100); // inter-packet delay 200ms
   digitalWrite(13, HIGH); // turn LED on
 }

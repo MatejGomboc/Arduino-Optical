@@ -16,12 +16,13 @@ class ArduinoOpticalReceiver
 {
 	public:
 		void begin(unsigned long baudRate); // begin optical communication
-		bool receivePacket(char* bytes, const unsigned long length, char* status); // receive one packet
+		bool receivePacket(char* bytes, const unsigned long length); // receive one packet
 		// returns true if entire packet received else return false
 		// status holds current receiver status: 1-normal, 2-seqNumErr, 3-CRCerr, 0-invalidFunctionParameters
-	public:
-		char _sequenceNumberExpected; // current expected packet sequence number
-		char _sequenceNumberReceived; // current received sequence number
+		char sequenceNumberExpected; // current expected packet sequence number
+		char sequenceNumberReceived; // current received sequence number
+		bool seqNumError; // if invalid sequence number
+		bool CRCerror; // if CRC error
 	private:
 		char _receivedCRC; // received packet CRC
 		char _calculatedCRC; // calculated  packet CRC

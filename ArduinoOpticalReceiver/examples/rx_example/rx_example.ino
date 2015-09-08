@@ -29,27 +29,19 @@ void loop()
   packet.d = 0.0;
   
   char receiveBuffer[sizeof(packet_t)] = {0}; // create empty receive buffer
-  char receiverStatus = 1; // reset status
   
-  while(false == arduinoOpticalReceiver.receivePacket(&receiveBuffer[0], sizeof(packet_t), &receiverStatus)) // receive one packet
+  while(false == arduinoOpticalReceiver.receivePacket(&receiveBuffer[0], sizeof(packet_t)); // receive one packet
+
+  if (arduinoOpticalReceiver.seqNumError)
   {
-    switch(receiverStatus)
-    {
-      case 0:
-        swSerial.println("Invalid packet length OR receive buffer error.");
-        break;
-      case 1:
-        // swSerial.println("Ok");
-        break;
-      case 2:
-        swSerial.println("Invalid packet sequence number.");
-        swSerial.println(arduinoOpticalReceiver._sequenceNumberReceived);
-        swSerial.println(arduinoOpticalReceiver._sequenceNumberExpected);
-        break;
-      case 3:
-        swSerial.println("Invalid packet CRC. Packet currupted.");
-        break;
-    }
+    swSerial.println("Invalid packet sequence number.");
+    swSerial.println(arduinoOpticalReceiver.sequenceNumberReceived);
+    swSerial.println(arduinoOpticalReceiver.sequenceNumberExpected);
+  }
+
+  if (arduinoOpticalReceiver.CRCerror)
+  {
+    swSerial.println("Invalid packet CRC. Packet currupted.");
   }
   
   memcpy(&packet, &receiveBuffer[0], sizeof(packet_t)); // deserialize received bytes, reconstruct packet
