@@ -53,15 +53,17 @@ bool ArduinoOpticalReceiver::receivePacket(char* bytes, const unsigned long leng
 				// if start of frame received go to next state
 				if (receivedByte == 's') _state = waitSeq;
 				_byteCount = 0; // reset payload byte counter
-				_calculatedCRC = 0; // reset CRC
+				_receivedCRC = 0; // reset received crc
+				_calculatedCRC = 0; // reset calculated CRC
 				seqNumError = false; // reset sequence number error indicator
 	            CRCerror = false; // reset CRC error indicator
 				return false;
 			case waitSeq: // receive sequence number
 				sequenceNumberReceived = receivedByte;
 				_byteCount = 0; // reset payload byte counter
-				_calculatedCRC = 0;  // reset CRC
-				_calculatedCRC = updateChecksum(receivedByte, _calculatedCRC);
+				_receivedCRC = 0; // reset received crc
+				_calculatedCRC = 0; // reset calculated CRC
+				_calculatedCRC = updateChecksum(sequenceNumberReceived, _calculatedCRC);
 				// if sequence number received go to next state
 				_state = receiveData;
 				if (sequenceNumberReceived != sequenceNumberExpected) seqNumError = true; // if invalid sequence number
@@ -69,13 +71,14 @@ bool ArduinoOpticalReceiver::receivePacket(char* bytes, const unsigned long leng
 				return false;
 			case receiveData: // receive payload
 				bytes[_byteCount] = receivedByte;
-				_calculatedCRC = updateChecksum(receivedByte, _calculatedCRC);
+				_calculatedCRC = updateChecksum(bytes[_byteCount], _calculatedCRC);
 				_byteCount++; // increment payload byte counter
 				// if all payload received go to next state
 				if (_byteCount == length) _state = waitCRC;
 				CRCerror = false; // reset CRC error indicator
 				return false;
 			case waitCRC: // receive CRC
+				_receivedCRC = 0; // reset received crc
 				_receivedCRC = receivedByte;
 				// if CRC received go to frst state
 				_state = waitStart;
@@ -86,7 +89,7 @@ bool ArduinoOpticalReceiver::receivePacket(char* bytes, const unsigned long leng
 				if(sequenceNumberExpected == 127) sequenceNumberExpected = 0;
 				else sequenceNumberExpected++;
 				numOfReceivedPackets ++; // increase received packets counter
-				numOfCurruptedPackets ++; // increase currupted packets counter
+				if (CRCerror || seqNumError) numOfCurruptedPackets ++; // increase currupted packets counter
 				if (numOfReceivedPackets > 0) errorRate = (float)numOfCurruptedPackets * 100.0f / (float)numOfReceivedPackets; // calculate packet error rate
 				if (numOfReceivedPackets == 1000) // after 1000 received packets reset both packet counters
 				{
