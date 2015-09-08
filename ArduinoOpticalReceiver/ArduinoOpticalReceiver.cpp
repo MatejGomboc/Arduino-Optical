@@ -12,7 +12,6 @@ void ArduinoOpticalReceiver::begin(unsigned long baudRate)
 	seqNumError = false; // reset sequence number error indicator
 	CRCerror = false; // reset CRC error indicator
 	_state = waitStart; // first state
-	
 	numOfReceivedPackets = 0; // reset received packets counter
 	numOfCurruptedPackets = 0; // reset currupted packets counter
 	errorRate = 0.0f; // reset error rate
@@ -53,17 +52,18 @@ bool ArduinoOpticalReceiver::receivePacket(char* bytes, const unsigned long leng
 			case waitStart: // wait for start of frame
 				// if start of frame received go to next state
 				if (receivedByte == 's') _state = waitSeq;
+				_byteCount = 0; // reset payload byte counter
 				_calculatedCRC = 0; // reset CRC
 				seqNumError = false; // reset sequence number error indicator
 	            CRCerror = false; // reset CRC error indicator
 				return false;
 			case waitSeq: // receive sequence number
 				sequenceNumberReceived = receivedByte;
+				_byteCount = 0; // reset payload byte counter
 				_calculatedCRC = 0;  // reset CRC
 				_calculatedCRC = updateChecksum(receivedByte, _calculatedCRC);
 				// if sequence number received go to next state
 				_state = receiveData;
-				_byteCount = 0;
 				if (sequenceNumberReceived != sequenceNumberExpected) seqNumError = true; // if invalid sequence number
 				else seqNumError = false;
 				return false;
@@ -77,11 +77,11 @@ bool ArduinoOpticalReceiver::receivePacket(char* bytes, const unsigned long leng
 				return false;
 			case waitCRC: // receive CRC
 				_receivedCRC = receivedByte;
-				_calculatedCRC = updateChecksum(receivedByte, _calculatedCRC);
 				// if CRC received go to frst state
 				_state = waitStart;
 				if(_receivedCRC != _calculatedCRC) CRCerror = true; // if CRC error
 				else CRCerror = false;
+				_byteCount = 0; // reset payload byte counter
 				sequenceNumberExpected = sequenceNumberReceived; // update packet sequence number
 				if(sequenceNumberExpected == 127) sequenceNumberExpected = 0;
 				else sequenceNumberExpected++;

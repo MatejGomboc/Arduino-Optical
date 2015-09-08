@@ -35,8 +35,8 @@ void loop()
   if (arduinoOpticalReceiver.seqNumError)
   {
     swSerial.println("Invalid packet sequence number.");
-    swSerial.println(arduinoOpticalReceiver.sequenceNumberReceived);
-    swSerial.println(arduinoOpticalReceiver.sequenceNumberExpected);
+    swSerial.print("expected seqNum: "); swSerial.println(arduinoOpticalReceiver.sequenceNumberExpected);
+    swSerial.print("received seqNum: "); swSerial.println(arduinoOpticalReceiver.sequenceNumberReceived);
     swSerial.println();
   }
 
@@ -45,6 +45,9 @@ void loop()
     swSerial.println("Invalid packet CRC. Packet currupted.");
     swSerial.println();
   }
+
+  swSerial.print("err rate: "); swSerial.print(arduinoOpticalReceiver.errorRate); swSerial.println("%");
+  swSerial.println();
   
   memcpy(&packet, &receiveBuffer[0], sizeof(packet_t)); // deserialize received bytes, reconstruct packet
 
@@ -55,6 +58,4 @@ void loop()
   swSerial.print("f: "); swSerial.println(packet.f); // debug output
   swSerial.print("d: "); swSerial.println(packet.d); // debug output
   swSerial.println(); // debug output
-
-  swSerial.print("err rate: "); swSerial.print(arduinoOpticalReceiver.errorRate); swSerial.println("%"); // debug output
 }
