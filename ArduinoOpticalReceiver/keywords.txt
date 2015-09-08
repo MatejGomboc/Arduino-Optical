@@ -1,0 +1,16 @@
+#######################################
+# Syntax Coloring Map ArduinoOpticalReceiver
+#######################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+
+ArduinoOpticalReceiver	KEYWORD1
+State KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+begin	KEYWORD2
+receivePacket	KEYWORD2
