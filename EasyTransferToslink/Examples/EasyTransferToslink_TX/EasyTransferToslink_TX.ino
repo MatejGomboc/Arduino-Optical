@@ -18,6 +18,8 @@ char c = 'a';
 
 void loop()
 {
+  unsigned long startTime = micros();
+  
   for (int i = 0; i < sizeof(testData); i++)
   {
     testData[i] = c;
@@ -30,5 +32,7 @@ void loop()
   swSerial.println("data sent");
   swSerial.println();
   
-  delay(500);
+  delay(300);
+  unsigned long endTime = micros();
+  swSerial.println(endTime - startTime);
 }

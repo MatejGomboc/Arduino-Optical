@@ -16,7 +16,8 @@ void setup()
 
 void loop()
 {
-  delay(100);
+  unsigned long startTime = micros();
+  delay(20);
   
   //check and see if a data packet has come in.
   while (false == ET.receiveData(swSerial)) //swSerial needed when debuging
@@ -24,8 +25,8 @@ void loop()
     //swSerial.println();
     if (ET.receiveFailed) // if reception error
     {
-      swSerial.println("receive failed");
-      swSerial.println();
+//      swSerial.println("receive failed");
+//      swSerial.println();
       return;
     }
   }
@@ -35,4 +36,7 @@ void loop()
     swSerial.println();
     swSerial.print("received: "); swSerial.print((char)testData[i]); swSerial.print(" "); swSerial.println(testData[i], DEC);
   }
+
+  unsigned long endTime = micros();
+  swSerial.println(endTime - startTime);
 }

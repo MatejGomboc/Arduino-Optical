@@ -14,9 +14,11 @@ void setup()
   swSerial.begin(9600); // init debug interface, 9600 bps
 }
 
+char c = 'a';
+
 void loop()
 {
-  char c = 'a';
+  unsigned long startTime = micros();
   
   for (int i = 0; i < sizeof(testData); i++)
   {
@@ -29,8 +31,13 @@ void loop()
 
   swSerial.println("data sent");
   swSerial.println();
+  
+  delay(100);
+  unsigned long endTime = micros();
+  swSerial.println(endTime - startTime);
 
-  delay(1000);
+  startTime = micros();
+  delay(1);
   
   //check and see if a data packet has come in.
   while (false == ET.receiveData(swSerial)) //swSerial needed when debuging
@@ -47,6 +54,9 @@ void loop()
   for (int i = 0; i < sizeof(testData); i++)
   {
     swSerial.println();
-    swSerial.print("received: "); swSerial.println((char)testData[i]);
+    swSerial.print("received: "); swSerial.print((char)testData[i]); swSerial.print(" "); swSerial.println(testData[i], DEC);
   }
+
+  endTime = micros();
+  swSerial.println(endTime - startTime);
 }
