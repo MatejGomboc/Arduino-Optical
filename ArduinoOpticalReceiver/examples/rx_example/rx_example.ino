@@ -1,13 +1,17 @@
-#include "ArduinoOpticalReceiver.h"
 #include <SoftwareSerial.h>
+#include "ArduinoOpticalReceiver.h"
 
-typedef struct // define packet structure
+typedef union // define packet
 {
-  char c;
-  int i;
-  long l;
-  float f;
-  double d;
+  struct __attribute__((__packed__))
+  {
+    char c;
+    int i;
+    long l;
+    float f;
+    double d;
+  } value;
+  char* bytes;
 } packet_t;
 
 packet_t packet; // received packet
@@ -22,15 +26,13 @@ void setup()
 
 void loop()
 {
-  packet.c = 0; // reset packet
-  packet.i = 0;
-  packet.l = 0L;
-  packet.f = 0.0f;
-  packet.d = 0.0;
+  packet.value.c = 0; // reset packet
+  packet.value.i = 0;
+  packet.value.l = 0L;
+  packet.value.f = 0.0f;
+  packet.value.d = 0.0;
   
-  char receiveBuffer[sizeof(packet_t)] = {0}; // create empty receive buffer
-  
-  while(false == arduinoOpticalReceiver.receivePacket(&receiveBuffer[0], sizeof(packet_t))); // receive one packet
+  while(false == arduinoOpticalReceiver.receivePacket(&packet.bytes[0], sizeof(packet_t))); // receive one packet
 
   if (arduinoOpticalReceiver.seqNumError)
   {
@@ -48,14 +50,12 @@ void loop()
 
   swSerial.print("err rate: "); swSerial.print(arduinoOpticalReceiver.errorRate); swSerial.println("%");
   swSerial.println();
-  
-  memcpy(&packet, &receiveBuffer[0], sizeof(packet_t)); // deserialize received bytes, reconstruct packet
 
   // packet printout
-  swSerial.print("c: "); swSerial.println(packet.c); // debug output
-  swSerial.print("i: "); swSerial.println(packet.i); // debug output
-  swSerial.print("l: "); swSerial.println(packet.l); // debug output
-  swSerial.print("f: "); swSerial.println(packet.f); // debug output
-  swSerial.print("d: "); swSerial.println(packet.d); // debug output
+  swSerial.print("c: "); swSerial.println(packet.value.c); // debug output
+  swSerial.print("i: "); swSerial.println(packet.value.i); // debug output
+  swSerial.print("l: "); swSerial.println(packet.value.l); // debug output
+  swSerial.print("f: "); swSerial.println(packet.value.f); // debug output
+  swSerial.print("d: "); swSerial.println(packet.value.d); // debug output
   swSerial.println(); // debug output
 }

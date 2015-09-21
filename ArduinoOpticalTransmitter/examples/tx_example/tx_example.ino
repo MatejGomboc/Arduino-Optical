@@ -1,12 +1,16 @@
 #include "ArduinoOpticalTransmitter.h"
 
-typedef struct // define packet structure
+typedef union // define packet
 {
-  char c;
-  int i;
-  long l;
-  float f;
-  double d;
+  struct __attribute__((__packed__))
+  {
+    char c;
+    int i;
+    long l;
+    float f;
+    double d;
+  } value;
+  char* bytes;
 } packet_t;
 
 packet_t packet; // packet to be transmitted
@@ -16,11 +20,11 @@ void setup()
 {
   arduinoOpticalTransmitter.begin(1000000); // init optical transmission, 1 Mbps
   
-  packet.c = 42; // prepare new packet to be sent
-  packet.i = 2;
-  packet.l = 3L;
-  packet.f = 4.0f;
-  packet.d = 5.0;
+  packet.value.c = 42; // prepare new packet to be sent
+  packet.value.i = 2;
+  packet.value.l = 3L;
+  packet.value.f = 4.0f;
+  packet.value.d = 5.0;
 
   pinMode(13, OUTPUT); // enable LED on pin 13, LED is blinking if packets being transmitted
 }
@@ -30,16 +34,14 @@ void loop()
   delay(5);
   digitalWrite(13, LOW); // turn LED off
   
-  packet.c ++; // prepare new packet to be sent
-  packet.i ++;
-  packet.l ++;
-  packet.f += 1.0f;
-  packet.d += 1.0;
+  packet.value.c ++; // prepare new packet to be sent
+  packet.value.i ++;
+  packet.value.l ++;
+  packet.value.f += 1.0f;
+  packet.value.d += 1.0;
 
-  char transmittBuffer[sizeof(packet_t)] = {0}; // create empty transmitt buffer
-  memcpy(&transmittBuffer[0], &packet, sizeof(packet_t)); // serialize packet
-  arduinoOpticalTransmitter.sendPacket(&transmittBuffer[0], sizeof(packet_t), 5); // send packet, inter-byte delay 100ms
+  arduinoOpticalTransmitter.sendPacket(&packet.bytes[0], sizeof(packet_t), 5); // send packet, inter-byte delay 5ms
   
-  delay(5); // inter-packet delay 200ms
+  delay(5); // inter-packet delay 10ms
   digitalWrite(13, HIGH); // turn LED on
 }

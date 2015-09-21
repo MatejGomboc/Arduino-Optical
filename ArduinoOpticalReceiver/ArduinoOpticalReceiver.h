@@ -18,7 +18,6 @@ class ArduinoOpticalReceiver
 		void begin(unsigned long baudRate); // begin optical communication
 		bool receivePacket(char* bytes, const unsigned long length); // receive one packet
 		// returns true if entire packet received else return false
-		// status holds current receiver status: 1-normal, 2-seqNumErr, 3-CRCerr, 0-invalidFunctionParameters
 		char sequenceNumberExpected; // current expected packet sequence number
 		char sequenceNumberReceived; // current received sequence number
 		bool seqNumError; // if invalid sequence number

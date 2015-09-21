@@ -31,7 +31,7 @@ bool ArduinoOpticalReceiver::receivePacket(char* bytes, const unsigned long leng
 	
 	if (Serial.available() > 0) // if data available
 	{
-		receivedByte = Serial.read(); // read one received byte
+		receivedByte = (char)Serial.read(); // read one received byte
 		
 		// perform byte unstuffing
 		if (receivedByte == 'd' && _delimiterReceived == false) // if first delimiter received
